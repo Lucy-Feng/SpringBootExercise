@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.HtmlUtils;
+
+import javax.servlet.http.HttpSession;
 import java.util.Objects;
 
 
@@ -19,7 +21,7 @@ public class LoginController {
     @PostMapping(value = "api/login")
 //    @RequestMapping(value = "/login",method = RequestMethod.POST)
     @ResponseBody
-    public Result login(@RequestBody User requestUser) {
+    public Result login(@RequestBody User requestUser, HttpSession session) {
         // 对 html 标签进行转义，防止 XSS 攻击
         String username = requestUser.getUsername();
         username = HtmlUtils.htmlEscape(username);
@@ -29,6 +31,8 @@ public class LoginController {
         if(null == user){
             return new Result(400);
         }else{
+            // 把用户信息存在 Session 对象中(在访问别的页面时，可以通过判断是否存在用户变量来判断用户是否登录)
+            session.setAttribute("user",user);
             return new Result(200);
         }
 
